@@ -1,5 +1,6 @@
 from lib.config import cfg, args
 import numpy as np
+from lib.utils.camera_utils import Camera
 import os
 ### SCRIPTS BEGINING ###
 def run_dataset():
@@ -9,7 +10,8 @@ def run_dataset():
     cfg.train.num_workers = 0
     data_loader = make_data_loader(cfg, is_train=False)
     for batch in tqdm.tqdm(data_loader):
-        pass
+        print(batch.keys())
+
 
 def run_network():
     from lib.networks import make_network

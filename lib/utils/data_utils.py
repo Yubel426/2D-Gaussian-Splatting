@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
 import random
+import collections
+import struct
 from torch import nn
 import torch
 from imgaug import augmenters as iaa
