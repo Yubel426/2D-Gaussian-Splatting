@@ -1,6 +1,5 @@
 from lib.config import cfg, args
 import numpy as np
-from lib.utils.camera_utils import Camera
 import os
 ### SCRIPTS BEGINING ###
 def run_dataset():
