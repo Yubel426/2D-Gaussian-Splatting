@@ -1,14 +1,14 @@
 task: nerf
 gpus: [0]
 exp_name: '2dgs'
-scene: 'kitchen'
+scene: 'kitchen_mini'
 
 # module path
 train_dataset_module: lib.datasets.2dgs.dataset_colmap
 test_dataset_module: lib.datasets.2dgs.dataset_colmap
-network_module: lib.networks.nerf.network
-loss_module: lib.train.losses.nerf
-evaluator_module: lib.evaluators.nerf
+network_module: lib.networks.gs.gs
+loss_module: lib.train.losses.gs
+evaluator_module: lib.evaluators.img_fit
 visualizer_module: lib.visualizers.nerf
 
 task_arg:
@@ -79,5 +79,6 @@ save_ep: 20
 eval_ep: 20       # 10000 iterations
 save_latest_ep: 5 # 2500 iterations
 log_interval: 10
-train.collator: '3dgs'
-test.collator: '3dgs'
+sh_degree: 3
+eps: 0
+resume: False

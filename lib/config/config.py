@@ -7,6 +7,31 @@ from . import yacs
 
 cfg = CN()
 
+#3dgs
+cfg.sh_degree = 3
+cfg.scaling_modifier = 1.0
+# cfg.override_color = None
+cfg.pipe = CN()
+cfg.pipe.debug = False
+cfg.pipe.compute_cov3D_python = False
+cfg.pipe.convert_SHs_python = False
+cfg.white_background = False
+cfg.densify_from_iter = 500
+cfg.densify_until_iter = 15000
+cfg.densification_interval = 100
+cfg.densify_grad_threshold = 0.0002
+cfg.opacity_reset_interval = 3000
+cfg.position_lr_init = 0.00016
+cfg.position_lr_final = 0.0000016
+cfg.position_lr_delay_mult = 0.01
+cfg.position_lr_max_steps = 30_000
+cfg.feature_lr = 0.0025
+cfg.opacity_lr = 0.05
+cfg.scaling_lr = 0.005
+cfg.rotation_lr = 0.001
+cfg.spatial_lr_scale = 1.0
+
+
 # extract_mesh
 cfg.level = 32.
 cfg.resolution = 256

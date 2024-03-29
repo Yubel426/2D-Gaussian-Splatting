@@ -300,7 +300,7 @@ def load_model(net,
 
     if not os.path.exists(model_dir):
         return 0
-
+    #TODO: 只选取.pth
     pths = [
         int(pth.split('.')[0]) for pth in os.listdir(model_dir)
         if pth != 'latest.pth'

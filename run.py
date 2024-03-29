@@ -22,13 +22,14 @@ def run_network():
     import time
 
     network = make_network(cfg).cuda()
-    load_network(network, cfg.trained_model_dir, epoch=cfg.test.epoch)
+    load_network(network, cfg.trained_model_dir,resume=False, epoch=cfg.test.epoch)
     network.eval()
+    cfg.train.num_workers = 0 #?
 
     data_loader = make_data_loader(cfg, is_train=False)
     total_time = 0
     for batch in tqdm.tqdm(data_loader):
-        batch = to_cuda(batch)
+        # batch = to_cuda(batch)
         with torch.no_grad():
             torch.cuda.synchronize()
             start = time.time()

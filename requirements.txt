@@ -8,3 +8,5 @@ tensorboardX
 termcolor
 trimesh
 sympy
+ninja
+

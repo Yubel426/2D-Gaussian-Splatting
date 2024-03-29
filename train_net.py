@@ -17,17 +17,20 @@ if cfg.fix_random:
 
 
 def train(cfg, network):
+    cfg.train.num_workers = 0 #?
     train_loader = make_data_loader(cfg,
                                     is_train=True,
                                     is_distributed=cfg.distributed,
                                     max_iter=cfg.ep_iter)
-    val_loader = make_data_loader(cfg, is_train=False)
+    # val_loader = make_data_loader(cfg, is_train=False)
+    network.load_ply(os.path.join(cfg.trained_model_dir, "point_cloud.ply"))
+
     trainer = make_trainer(cfg, network, train_loader)
 
     optimizer = make_optimizer(cfg, network)
     scheduler = make_lr_scheduler(cfg, optimizer)
     recorder = make_recorder(cfg)
-    evaluator = make_evaluator(cfg)
+    # evaluator = make_evaluator(cfg)
 
     begin_epoch = load_model(network,
                              optimizer,
@@ -63,8 +66,8 @@ def train(cfg, network):
                        epoch,
                        last=True)
 
-        if (epoch + 1) % cfg.eval_ep == 0 and cfg.local_rank == 0:
-            trainer.val(epoch, val_loader, evaluator, recorder)
+        # if (epoch + 1) % cfg.eval_ep == 0 and cfg.local_rank == 0:
+        #     trainer.val(epoch, val_loader, evaluator, recorder)
 
     return network
 

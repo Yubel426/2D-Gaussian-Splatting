@@ -9,6 +9,7 @@ from typing import NamedTuple
 from lib.utils.colmap import read_write_model
 from lib.utils import graphics_utils, camera_utils
 from lib.config import cfg
+from lib.networks.gs.gs import GaussianModel
 import imageio
 import json
 import cv2
@@ -235,16 +236,18 @@ class Dataset(data.Dataset):
             print("Loading Test Cameras")
             self.test_cameras[resolution_scale] = camera_utils.cameraList_from_camInfos(scene_info.test_cameras, resolution_scale, kwargs)
 
-        if self.loaded_iter:
-            # TODO: create gs
-            pass
-            # self.gaussians.load_ply(os.path.join(self.model_path,
-            #                                                "point_cloud",
-            #                                                "iteration_" + str(self.loaded_iter),
-            #                                                "point_cloud.ply"))
-        else:
-            pass
-            # self.gaussians.create_from_pcd(scene_info.point_cloud, self.cameras_extent)
+        # if self.loaded_iter:
+        #     # TODO: create gs
+        #     pass
+        #     # self.gaussians.load_ply(os.path.join(self.model_path,
+        #     #                                                "point_cloud",
+        #     #                                                "iteration_" + str(self.loaded_iter),
+        #     #                                                "point_cloud.ply"))
+        # else:
+        self.gaussians = GaussianModel()
+        self.gaussians.create_from_pcd(scene_info.point_cloud, self.cameras_extent)
+        self.gaussians.save_ply(os.path.join(cfg.trained_model_dir, "point_cloud.ply"))
+        del self.gaussians
 
     def __getitem__(self, index):
         """
@@ -265,20 +268,20 @@ class Dataset(data.Dataset):
             batch['FoVy'] = self.train_cameras[self.resolution_scales[0]][index].FoVy
             batch['image_height'] = self.train_cameras[self.resolution_scales[0]][index].image_height
             batch['image_width'] = self.train_cameras[self.resolution_scales[0]][index].image_width
-            batch['word_view_transform'] = self.train_cameras[self.resolution_scales[0]][index].world_view_transform
+            batch['world_view_transform'] = self.train_cameras[self.resolution_scales[0]][index].world_view_transform
             batch['full_proj_transform'] = self.train_cameras[self.resolution_scales[0]][index].full_proj_transform
             batch['camera_center'] = self.train_cameras[self.resolution_scales[0]][index].camera_center
-
+            batch['original_image'] = self.train_cameras[self.resolution_scales[0]][index].original_image
             return batch
         else:
             batch['FoVx'] = self.test_cameras[self.resolution_scales[0]][index].FoVx
             batch['FoVy'] = self.test_cameras[self.resolution_scales[0]][index].FoVy
             batch['image_height'] = self.test_cameras[self.resolution_scales[0]][index].image_height
             batch['image_width'] = self.test_cameras[self.resolution_scales[0]][index].image_width
-            batch['word_view_transform'] = self.test_cameras[self.resolution_scales[0]][index].world_view_transform
+            batch['world_view_transform'] = self.test_cameras[self.resolution_scales[0]][index].world_view_transform
             batch['full_proj_transform'] = self.test_cameras[self.resolution_scales[0]][index].full_proj_transform
             batch['camera_center'] = self.test_cameras[self.resolution_scales[0]][index].camera_center
-
+            batch['original_image'] = self.test_cameras[self.resolution_scales[0]][index].original_image
             return batch
 
 
