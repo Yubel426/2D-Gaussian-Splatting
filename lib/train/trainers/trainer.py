@@ -52,11 +52,26 @@ class Trainer(object):
             batch = to_cuda(batch, self.device)
             batch['step'] = self.global_step
             output, loss, loss_stats, image_stats = self.network(batch)
+            viewspace_point_tensor, visibility_filter, radii = output["viewspace_points"], output["visibility_filter"], output["radii"]
 
             # training stage: loss; optimizer; scheduler
             loss = loss.mean()
             optimizer.zero_grad()
             loss.backward()
+            with torch.no_grad():
+                # Densification
+                if iteration < cfg.densify_until_iter:
+                    # Keep track of max radii in image-space for pruning
+                    self.network.net.max_radii2D[visibility_filter] = torch.max(self.network.net.max_radii2D[visibility_filter], radii[visibility_filter])
+                    self.network.net.add_densification_stats(viewspace_point_tensor, visibility_filter)
+                    # 对3D gaussians进行克隆或者切分, 并将opacity小于一定阈值的3D gaussians进行删除            
+                    if iteration > cfg.densify_from_iter and iteration % cfg.densification_interval == 0:
+                        size_threshold = 20 if iteration > cfg.opacity_reset_interval else None
+                        self.network.net.densify_and_prune(cfg.densify_grad_threshold, 0.005, batch['cameras_extent'], size_threshold)
+                    # 对3D gaussians的不透明度进行重置
+                    if iteration % cfg.opacity_reset_interval == 0 or (cfg.white_background and iteration == cfg.densify_from_iter):
+                        self.network.net.reset_opacity()
+
             torch.nn.utils.clip_grad_value_(self.network.parameters(), 40)
             optimizer.step()
 
